@@ -18,10 +18,12 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 
 urlpatterns = [
-    path('', include('api_app.urls'), name="api_app"),
-    path('login/', admin.site.urls),
+    path('api/', include('api_main.urls'), name="api_main"),
+    path('admin/login/', admin.site.urls),
     path('schema/', SpectacularAPIView.as_view(), name="schema"),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name="docs"),
+    path("management/", include("dashboard.authentication.urls")),  # Auth routes - login / register
+    path("management/", include("dashboard.app.urls"))
 ]
 
 admin.site.site_header = "Vedanya healthcare admin"
