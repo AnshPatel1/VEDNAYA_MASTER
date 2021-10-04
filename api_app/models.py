@@ -33,74 +33,74 @@ class Product(models.Model):
 
 
 class Doctor(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=False, name="Name")
-    degree = models.CharField(max_length=255, null=False, unique=False, name="Degree")
+    name = models.CharField(max_length=255, null=False, unique=False)
+    degree = models.CharField(max_length=255, null=False, unique=False)
     type = models.CharField(max_length=255, null=False, unique=False, choices=[
         ('P', 'Prescriber'),
         ('D', 'Dispenser'),
         ('B', 'Both'),
-    ], name="Type"
+    ]
                               )
     support_category = models.CharField(max_length=255, null=False, unique=False, choices=[
         ('A+', 'A+'),
         ('A', 'A'),
         ('B', 'B'),
         ('C', 'C'),
-    ], name="Support Category")
+    ])
 
     class Meta:
-        ordering = ['Name']
+        ordering = ['name']
 
     def __str__(self):
         return self.name
 
 
 class ARC(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=False, name="Retailer Name")
-    person_in_charge = models.CharField(max_length=255, null=False, unique=False, name="Person in Charge")
+    name = models.CharField(max_length=255, null=False, unique=False)
+    person_in_charge = models.CharField(max_length=255, null=False, unique=False)
     business_type = models.CharField(max_length=255, null=False, unique=False, choices=[
         ('RETAIL', 'Retail'),
         ('WHOLESALE', 'Wholesale'),
         ('BOTH', 'Both'),
-    ], name="Business Type")
-    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE, name="Select Sitting Doctor")
-    products_under_support = models.ManyToManyField(Product, name='Products Under Support')
+    ])
+    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    products_under_support = models.ManyToManyField(Product)
 
     class Meta:
-        ordering = ['Retailer Name']
+        ordering = ['name']
 
     def __str__(self):
         return self.name
 
 
 class Chemist(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=False, name="Chemist Name")
-    person_in_charge = models.CharField(max_length=255, null=False, unique=False, name="Person in Charge")
+    name = models.CharField(max_length=255, null=False, unique=False)
+    person_in_charge = models.CharField(max_length=255, null=False, unique=False)
     business_type = models.CharField(max_length=255, null=False, unique=False, choices=[
         ('RETAIL', 'Retail'),
         ('WHOLESALE', 'Wholesale'),
         ('BOTH', 'Both'),
-    ], name="Business Type")
-    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE, name="Select Sitting Doctor")
-    products_under_support = models.ManyToManyField(Product, name='Products Under Support')
+    ])
+    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    products_under_support = models.ManyToManyField(Product)
 
     class Meta:
-        ordering = ['Chemist Name']
+        ordering = ['name']
 
     def __str__(self):
         return self.name
 
 
 class MSO(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=False, name="Name")
-    hq = models.ForeignKey(HQ, on_delete=models.CASCADE, name="HQ", default='N/A')
-    territory = models.CharField(max_length=255, null=False, unique=False, name="Territory")
-    connected_doctors = models.ManyToManyField(Doctor, name="Connected Doctors")
-    connected_arc = models.ManyToManyField(ARC, name="Connected ARCs")
-    connected_chemists = models.ManyToManyField(Chemist, name="Connected Chemists")
+    name = models.CharField(max_length=255, null=False, unique=False)
+    hq = models.ForeignKey(HQ, on_delete=models.CASCADE, default='N/A')
+    territory = models.CharField(max_length=255, null=False, unique=False)
+    connected_doctors = models.ManyToManyField(Doctor)
+    connected_arc = models.ManyToManyField(ARC)
+    connected_chemists = models.ManyToManyField(Chemist)
 
     class Meta:
-        ordering = ['Name']
+        ordering = ['name']
 
     def __str__(self):
         return self.name
