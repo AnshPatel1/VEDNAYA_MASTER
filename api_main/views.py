@@ -1,4 +1,9 @@
-from rest_framework import generics, permissions
+import simplejson
+from django.http import HttpResponse
+from rest_framework import generics, permissions, status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 from .models import *
 from .serializers import *
 
@@ -73,3 +78,33 @@ class MSODetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = MSO.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MSOSerializer
+
+
+class SBLRList(generics.ListCreateAPIView):
+    queryset = SBLR.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = SBLRSerializer
+
+
+class SBLRDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SBLR.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SBLRSerializer
+
+
+@api_view(['GET', ])
+def list_sblrs(request, mso_id):
+    try:
+        sblrs = SBLR.objects.filter(mso=mso_id)
+    except SBLR.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return_data = []
+        for sblr in sblrs:
+            serializer = SBLRSerializer(sblr)
+            return_data.append(serializer.data)
+        return Response({mso_id: return_data})
+
+
+

@@ -14,4 +14,7 @@ urlpatterns = [
     path('chemists/<int:pk>', views.ChemistDetail.as_view()),
     path('msos', views.MSOList.as_view()),
     path('msos/<int:pk>', views.MSODetail.as_view()),
+    path('sblrs', views.SBLRList.as_view()),
+    path('sblrs/get_by_id/<int:pk>', views.SBLRDetail.as_view()),
+    path('sblrs/<int:mso_id>', views.list_sblrs, name="detail"),
 ]
