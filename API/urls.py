@@ -22,8 +22,8 @@ urlpatterns = [
     path('admin/login/', admin.site.urls),
     path('schema/', SpectacularAPIView.as_view(), name="schema"),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name="docs"),
-    path("management/", include("dashboard.authentication.urls")),  # Auth routes - login / register
-    path("management/", include("dashboard.app.urls"))
+    path("", include("dashboard.authentication.urls")),  # Auth routes - login / register
+    path("", include("dashboard.app.urls"))
 ]
 
 admin.site.site_header = "Vedanya healthcare admin"

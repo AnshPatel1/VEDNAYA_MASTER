@@ -91,20 +91,33 @@ class SBLRDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SBLRSerializer
 
+    @api_view(['GET', ])
+    def list_sblrs_by_mso(request, mso_id):
+        try:
+            sblrs = SBLR.objects.filter(mso=mso_id)
+        except SBLR.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET', ])
-def list_sblrs(request, mso_id):
-    try:
-        sblrs = SBLR.objects.filter(mso=mso_id)
-    except SBLR.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        if request.method == 'GET':
+            return_data = []
+            for sblr in sblrs:
+                serializer = SBLRSerializer(sblr)
+                return_data.append(serializer.data)
+            return Response({mso_id: return_data})
 
-    if request.method == 'GET':
-        return_data = []
-        for sblr in sblrs:
-            serializer = SBLRSerializer(sblr)
-            return_data.append(serializer.data)
-        return Response({mso_id: return_data})
+    @api_view(['GET', ])
+    def list_sblrs_by_date(request, date):
+        try:
+            sblrs = SBLR.objects.filter(date=date)
+        except SBLR.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for sblr in sblrs:
+                serializer = SBLRSerializer(sblr)
+                return_data.append(serializer.data)
+            return Response({date: return_data})
 
 
 

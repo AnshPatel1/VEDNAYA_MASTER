@@ -15,6 +15,7 @@ urlpatterns = [
     path('msos', views.MSOList.as_view()),
     path('msos/<int:pk>', views.MSODetail.as_view()),
     path('sblrs', views.SBLRList.as_view()),
-    path('sblrs/get_by_id/<int:pk>', views.SBLRDetail.as_view()),
-    path('sblrs/<int:mso_id>', views.list_sblrs, name="detail"),
+    path('sblrs/id/<int:pk>', views.SBLRDetail.as_view()),
+    path('sblrs/<int:mso_id>', views.SBLRDetail.list_sblrs_by_mso, name="detail"),
+    path('sblrs/<str:date>', views.SBLRDetail.list_sblrs_by_date, name="sblr_date"),
 ]

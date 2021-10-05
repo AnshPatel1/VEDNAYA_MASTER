@@ -9,7 +9,7 @@ from dashboard.app import views
 urlpatterns = [
 
     # The home page
-    path('management/', views.index, name='home'),
+    path('', views.index, name='home'),
 
     # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),
