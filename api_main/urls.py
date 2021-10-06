@@ -20,8 +20,8 @@ urlpatterns = [
     path('msos/<int:id>/chemists', views.MSODetail.connected_chemists),
     path('sblrs', views.SBLRList.as_view()),
     path('sblrs/id/<int:pk>', views.SBLRDetail.as_view()),
-    path('sblrs/<int:mso_id>', views.SBLRDetail.list_sblrs_by_mso, name="detail"),
-    path('sblrs/<str:date>', views.SBLRDetail.list_sblrs_by_date, name="sblr_date"),
+    path('sblrs/<int:mso_id>', views.SBLRDetail.list_sblrs_by_mso),
+    path('sblrs/<str:date>', views.SBLRDetail.list_sblrs_by_date),
 
 
 
@@ -52,6 +52,6 @@ urlpatterns = [
     path('msos/<int:id>/chemists/', views.MSODetail.connected_chemists),
     path('sblrs/', views.SBLRList.as_view()),
     path('sblrs/id/<int:pk>/', views.SBLRDetail.as_view()),
-    path('sblrs/<int:mso_id>/', views.SBLRDetail.list_sblrs_by_mso, name="detail"),
-    path('sblrs/<str:date>/', views.SBLRDetail.list_sblrs_by_date, name="sblr_date"),
+    path('sblrs/<int:mso_id>/', views.SBLRDetail.list_sblrs_by_mso),
+    path('sblrs/<str:date>/', views.SBLRDetail.list_sblrs_by_date),
 ]

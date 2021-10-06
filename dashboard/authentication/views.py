@@ -4,8 +4,10 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 # Create your views here.
+from django.forms import forms
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+
 from .forms import LoginForm, SignUpForm
 
 
@@ -21,7 +23,9 @@ def login_view(request):
             password = form.cleaned_data.get("password")
             user = authenticate(username=username, password=password)
             if user is not None:
-                login(request, user)
+                if user.is_superuser:
+                    login(request, user)
+                msg = 'Invalid credentials'
                 return redirect("/")
             else:
                 msg = 'Invalid credentials'
