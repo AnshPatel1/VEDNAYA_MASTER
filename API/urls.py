@@ -19,7 +19,7 @@ from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 
 urlpatterns = [
     path('api/', include('api_main.urls'), name="api_main"),
-    path('admin/login/', admin.site.urls),
+    path('admin/database/login/', admin.site.urls),
     path('schema/', SpectacularAPIView.as_view(), name="schema"),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name="docs"),
     path("", include("dashboard.authentication.urls")),  # Auth routes - login / register

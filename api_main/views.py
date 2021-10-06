@@ -31,6 +31,20 @@ class HQDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = HQSerializer
 
+    @api_view(['GET', ])
+    def get_mso(request, hq):
+        try:
+            msos = MSO.objects.filter(hq=hq)
+        except HQ.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for mso in msos:
+                serializer = MSOSerializer(mso)
+                return_data.append(serializer.data)
+            return Response({hq: return_data})
+
 
 class DoctorList(generics.ListCreateAPIView):
     queryset = Doctor.objects.all()
@@ -79,6 +93,60 @@ class MSODetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MSOSerializer
 
+    @api_view(['GET', ])
+    def connected_doctors(request, id):
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_doctors = mso_data.data['connected_doctors']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for doctor in connected_doctors:
+                doctor = Doctor.objects.get(id=doctor)
+                serializer = DoctorSerializer(doctor)
+                return_data.append(serializer.data)
+                print(serializer.data)
+            return Response({id: return_data})
+
+    @api_view(['GET', ])
+    def connected_arcs(request, id):
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_arcs = mso_data.data['connected_arc']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for arc in connected_arcs:
+                arc = ARC.objects.get(id=arc)
+                serializer = ARCSerializer(arc)
+                return_data.append(serializer.data)
+                print(serializer.data)
+            return Response({id: return_data})
+
+    @api_view(['GET', ])
+    def connected_chemists(request, id):
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_chemists = mso_data.data['connected_chemists']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for chemist in connected_chemists:
+                chemist = Chemist.objects.get(id=chemist)
+                serializer = ChemistSerializer(chemist)
+                return_data.append(serializer.data)
+                print(serializer.data)
+            return Response({id: return_data})
+
 
 class SBLRList(generics.ListCreateAPIView):
     queryset = SBLR.objects.all()
@@ -88,7 +156,7 @@ class SBLRList(generics.ListCreateAPIView):
 
 class SBLRDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SBLR.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = SBLRSerializer
 
     @api_view(['GET', ])
