@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.models import User as authUser
 
 
 # Create your models here.
@@ -140,12 +142,18 @@ class MSO(models.Model):
         return self.name
 
 
+class User(models.Model):
+    user = models.ForeignKey(authUser, on_delete=models.CASCADE)
+    mso = models.ForeignKey(MSO, on_delete=models.CASCADE, null=True)
+
+
 class SBLR(models.Model):
     """
        EXAMPLE:
-
-
        {
+       'mso': mso_id,
+       'date': "YYYY-MM-DD",
+       'data': {
            'current_day_doctors': [
                {
                    id1: {
@@ -230,6 +238,7 @@ class SBLR(models.Model):
            ]
 
        }
+    }
        """
     mso = models.ForeignKey(MSO, on_delete=models.CASCADE, default='N/A')
     data = models.JSONField()

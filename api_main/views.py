@@ -147,6 +147,24 @@ class MSODetail(generics.RetrieveUpdateDestroyAPIView):
                 print(serializer.data)
             return Response({id: return_data})
 
+    @api_view(['GET', ])
+    def connected_stockists(request, id):
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_stockists = mso_data.data['connected_stockists']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for stockist in connected_stockists:
+                stockist = Stockist.objects.get(id=stockist)
+                serializer = StockistSerializer(stockist)
+                return_data.append(serializer.data)
+                print(serializer.data)
+            return Response({id: return_data})
+
 
 class SBLRList(generics.ListCreateAPIView):
     queryset = SBLR.objects.all()
@@ -188,4 +206,36 @@ class SBLRDetail(generics.RetrieveUpdateDestroyAPIView):
             return Response({date: return_data})
 
 
+class UserList(generics.ListCreateAPIView):
+    queryset = SBLR.objects.all()
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = SBLRSerializer
 
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SBLR.objects.all()
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = SBLRSerializer
+
+
+@api_view(['GET', ])
+def get_mso_by_user(request, username, password):
+    try:
+        user = authenticate(username=username, password=password)
+
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if user is None:
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        if user.is_authenticated:
+            _id = user.id
+            user = User.objects.get(user=_id)
+            user_serialized = UserSerializer(user)
+            user = user_serialized.data
+            mso_id = int(user['mso'])
+            mso = MSO.objects.get(id=mso_id)
+            serializer = MSOSerializer(mso)
+            return Response(serializer.data, 200)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Doctor, MSO, HQ, ARC, Chemist, SBLR, Stockist
+from .models import Product, Doctor, MSO, HQ, ARC, Chemist, SBLR, Stockist, User
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -82,6 +82,7 @@ class MSOSerializer(serializers.ModelSerializer):
             'connected_doctors',
             'connected_arc',
             'connected_chemists',
+            'connected_stockists',
         ]
 
     extra_kwargs = {}
@@ -112,6 +113,18 @@ class StockistSerializer(serializers.ModelSerializer):
             'person_in_charge',
             'stockist_type',
             'business_type',
+        ]
+
+    extra_kwargs = {}
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'pk',
+            'mso',
+            'user',
         ]
 
     extra_kwargs = {}

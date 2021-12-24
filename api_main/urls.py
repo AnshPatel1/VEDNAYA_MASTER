@@ -18,10 +18,12 @@ urlpatterns = [
     path('msos/<int:id>/doctors', views.MSODetail.connected_doctors),
     path('msos/<int:id>/arcs', views.MSODetail.connected_arcs),
     path('msos/<int:id>/chemists', views.MSODetail.connected_chemists),
+    path('msos/<int:id>/stockists', views.MSODetail.connected_stockists),
     path('sblrs', views.SBLRList.as_view()),
     path('sblrs/id/<int:pk>', views.SBLRDetail.as_view()),
     path('sblrs/<int:mso_id>', views.SBLRDetail.list_sblrs_by_mso),
     path('sblrs/<str:date>', views.SBLRDetail.list_sblrs_by_date),
+    path('app/login/<str:username>/<str:password>', views.get_mso_by_user),
 
 
 
@@ -54,4 +56,6 @@ urlpatterns = [
     path('sblrs/id/<int:pk>/', views.SBLRDetail.as_view()),
     path('sblrs/<int:mso_id>/', views.SBLRDetail.list_sblrs_by_mso),
     path('sblrs/<str:date>/', views.SBLRDetail.list_sblrs_by_date),
+    path('app/login/<str:username>/<str:password>/', views.get_mso_by_user),
+
 ]
