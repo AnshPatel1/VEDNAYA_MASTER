@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_spectacular',
     'api_main.apps.ApiAppConfig',
-    'dashboard.app'
+    # 'dashboard.app'
 ]
 
 REST_FRAMEWORK = {
