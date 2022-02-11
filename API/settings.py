@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-s%whfs5(bgld%afzg5)h7uda(zp@!)_bl=ms-m5phkps@c8rs%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')]
+ALLOWED_HOSTS = ['identifier-rocks-attract-arena.trycloudflare.com','localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')]
 
 
 # Application definition

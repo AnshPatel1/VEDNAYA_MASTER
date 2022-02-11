@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Doctor, MSO, HQ, ARC, Chemist, SBLR, Stockist, User
+from .models import Product, Doctor, MSO, HQ, ARC, Chemist, SBLR, Stockist, User, Sample, POP
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -10,6 +10,32 @@ class ProductSerializer(serializers.ModelSerializer):
             'name',
             'size',
             'type',
+            'price',
+        ]
+
+    extra_kwargs = {}
+
+
+
+
+
+class SampleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sample
+        fields = [
+            'pk',
+            'name',
+        ]
+
+    extra_kwargs = {}
+
+
+class POPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = POP
+        fields = [
+            'pk',
+            'name',
         ]
 
     extra_kwargs = {}
@@ -36,6 +62,7 @@ class DoctorSerializer(serializers.ModelSerializer):
             'degree',
             'type',
             'support_category',
+            'connected_stockists'
         ]
 
     extra_kwargs = {}
@@ -51,6 +78,7 @@ class ARCSerializer(serializers.ModelSerializer):
             'business_type',
             'sitting_doctor_id',
             'products_under_support',
+            'connected_stockists',
         ]
 
     extra_kwargs = {}
@@ -66,6 +94,7 @@ class ChemistSerializer(serializers.ModelSerializer):
             'business_type',
             'sitting_doctor_id',
             'products_under_support',
+            'connected_stockists',
         ]
 
     extra_kwargs = {}
@@ -94,7 +123,9 @@ class SBLRSerializer(serializers.ModelSerializer):
         fields = [
             'pk',
             'mso',
+            'total_booking',
             'date',
+            'summary',
             'data',
         ]
 
@@ -128,4 +159,3 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
     extra_kwargs = {}
-

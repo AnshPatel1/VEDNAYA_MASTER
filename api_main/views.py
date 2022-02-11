@@ -14,10 +14,45 @@ class ProductList(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
 
 
+class SampleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Sample.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SampleSerializer
+
+
+class SampleList(generics.ListCreateAPIView):
+    queryset = Sample.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = SampleSerializer
+
+
+class POPList(generics.ListCreateAPIView):
+    queryset = POP.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = POPSerializer
+
+
+class POPDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = POP.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = POPSerializer
+
+
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ProductSerializer
+
+    @api_view(['GET', ])
+    def get_id_by_name(request):
+        name = request.query_params['name']
+        try:
+            product = Product.objects.get(name=name)
+            product_data = ProductSerializer(product)
+            id = product_data.data['pk']
+        except Product.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"id": id})
 
 
 class HQList(generics.ListCreateAPIView):
@@ -52,15 +87,53 @@ class DoctorList(generics.ListCreateAPIView):
     serializer_class = DoctorSerializer
 
 
+@api_view(['GET', ])
+def get_stockists_by_doctor_id(request):
+    id = request.query_params['id']
+    try:
+        doctor = Doctor.objects.get(id=id)
+        doctor_data = DoctorSerializer(doctor)
+        connected_stockists = doctor_data.data['connected_stockists']
+    except Doctor.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return_data = []
+        for stockist in connected_stockists:
+            stockist = Stockist.objects.get(id=stockist)
+            serializer = StockistSerializer(stockist)
+            return_data.append(serializer.data)
+        return Response(return_data)
+
+
 class ARCList(generics.ListCreateAPIView):
     queryset = ARC.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = ARCSerializer
 
 
+@api_view(['GET', ])
+def get_stockists_by_arc_id(request):
+    id = request.query_params['id']
+    try:
+        arc = ARC.objects.get(id=id)
+        arc_data = ARCSerializer(arc)
+        connected_stockists = arc_data.data['connected_stockists']
+    except Chemist.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return_data = []
+        for stockist in connected_stockists:
+            stockist = Stockist.objects.get(id=stockist)
+            serializer = StockistSerializer(stockist)
+            return_data.append(serializer.data)
+        return Response(return_data)
+
+
 class ARCDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ARC.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = []
     serializer_class = ARCSerializer
 
 
@@ -74,6 +147,25 @@ class ChemistList(generics.ListCreateAPIView):
     queryset = Chemist.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = ChemistSerializer
+
+
+@api_view(['GET', ])
+def get_stockists_by_chemist_id(request):
+    id = request.query_params['id']
+    try:
+        chemist = Chemist.objects.get(id=id)
+        chemist_data = ChemistSerializer(chemist)
+        connected_stockists = chemist_data.data['connected_stockists']
+    except Chemist.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return_data = []
+        for stockist in connected_stockists:
+            stockist = Stockist.objects.get(id=stockist)
+            serializer = StockistSerializer(stockist)
+            return_data.append(serializer.data)
+        return Response(return_data)
 
 
 class ChemistDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -108,7 +200,6 @@ class MSODetail(generics.RetrieveUpdateDestroyAPIView):
                 doctor = Doctor.objects.get(id=doctor)
                 serializer = DoctorSerializer(doctor)
                 return_data.append(serializer.data)
-                print(serializer.data)
             return Response({id: return_data})
 
     @api_view(['GET', ])
@@ -126,7 +217,6 @@ class MSODetail(generics.RetrieveUpdateDestroyAPIView):
                 arc = ARC.objects.get(id=arc)
                 serializer = ARCSerializer(arc)
                 return_data.append(serializer.data)
-                print(serializer.data)
             return Response({id: return_data})
 
     @api_view(['GET', ])
@@ -144,7 +234,6 @@ class MSODetail(generics.RetrieveUpdateDestroyAPIView):
                 chemist = Chemist.objects.get(id=chemist)
                 serializer = ChemistSerializer(chemist)
                 return_data.append(serializer.data)
-                print(serializer.data)
             return Response({id: return_data})
 
     @api_view(['GET', ])
@@ -162,7 +251,84 @@ class MSODetail(generics.RetrieveUpdateDestroyAPIView):
                 stockist = Stockist.objects.get(id=stockist)
                 serializer = StockistSerializer(stockist)
                 return_data.append(serializer.data)
-                print(serializer.data)
+            return Response({id: return_data})
+
+
+class MSODetailQs(generics.RetrieveUpdateDestroyAPIView):
+    queryset = MSO.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = MSOSerializer
+
+    @api_view(['GET', ])
+    def connected_doctors(request):
+        id = request.query_params['id']
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_doctors = mso_data.data['connected_doctors']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for doctor in connected_doctors:
+                doctor = Doctor.objects.get(id=doctor)
+                serializer = DoctorSerializer(doctor)
+                return_data.append(serializer.data)
+            return Response({id: return_data})
+
+    @api_view(['GET', ])
+    def connected_arcs(request):
+        id = request.query_params['id']
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_arcs = mso_data.data['connected_arc']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for arc in connected_arcs:
+                arc = ARC.objects.get(id=arc)
+                serializer = ARCSerializer(arc)
+                return_data.append(serializer.data)
+            return Response({id: return_data})
+
+    @api_view(['GET', ])
+    def connected_chemists(request):
+        id = request.query_params['id']
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_chemists = mso_data.data['connected_chemists']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for chemist in connected_chemists:
+                chemist = Chemist.objects.get(id=chemist)
+                serializer = ChemistSerializer(chemist)
+                return_data.append(serializer.data)
+            return Response({id: return_data})
+
+    @api_view(['GET', ])
+    def connected_stockists(request):
+        id = request.query_params['id']
+        try:
+            mso = MSO.objects.get(id=id)
+            mso_data = MSOSerializer(mso)
+            connected_stockists = mso_data.data['connected_stockists']
+        except MSO.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            return_data = []
+            for stockist in connected_stockists:
+                stockist = Stockist.objects.get(id=stockist)
+                serializer = StockistSerializer(stockist)
+                return_data.append(serializer.data)
             return Response({id: return_data})
 
 
@@ -219,7 +385,9 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(['GET', ])
-def get_mso_by_user(request, username, password):
+def get_mso_by_user(request):
+    username = request.query_params['username']
+    password = request.query_params['passwd']
     try:
         user = authenticate(username=username, password=password)
 
@@ -239,3 +407,20 @@ def get_mso_by_user(request, username, password):
             mso = MSO.objects.get(id=mso_id)
             serializer = MSOSerializer(mso)
             return Response(serializer.data, 200)
+
+
+@api_view(['GET', ])
+def list_recent_sblrs_by_mso(request):
+    mso_id = int(request.query_params['id'])
+    try:
+        sblrs = SBLR.objects.filter(mso=mso_id)
+    except SBLR.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return_data = []
+        for sblr in sblrs:
+            serializer = SBLRSerializer(sblr)
+            return_data.append(serializer.data)
+        return_data.reverse()
+        return Response(return_data)

@@ -38,62 +38,15 @@ class Sample(models.Model):
     name = models.CharField(max_length=255, null=False, unique=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
 
 class POP(models.Model):
     name = models.CharField(max_length=255, null=False, unique=False)
-
-
-class Doctor(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=False)
-    degree = models.CharField(max_length=255, null=False, unique=False)
-    type = models.CharField(max_length=255, null=False, unique=False, choices=[
-        ('P', 'Prescriber'),
-        ('D', 'Dispenser'),
-        ('B', 'Both'),
-    ]
-                            )
-    support_category = models.CharField(max_length=255, null=False, unique=False, choices=[
-        ('A+', 'A+'),
-        ('A', 'A'),
-        ('B', 'B'),
-        ('C', 'C'),
-    ])
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
-class ARC(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=False)
-    person_in_charge = models.CharField(max_length=255, null=False, unique=False)
-    business_type = models.CharField(max_length=255, null=False, unique=False, choices=[
-        ('RETAIL', 'Retail'),
-        ('WHOLESALE', 'Wholesale'),
-        ('BOTH', 'Both'),
-    ])
-    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    products_under_support = models.ManyToManyField(Product)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
-class Chemist(models.Model):
-    name = models.CharField(max_length=255, null=False, unique=False)
-    person_in_charge = models.CharField(max_length=255, null=False, unique=False)
-    business_type = models.CharField(max_length=255, null=False, unique=False, choices=[
-        ('RETAIL', 'Retail'),
-        ('WHOLESALE', 'Wholesale'),
-        ('BOTH', 'Both'),
-    ])
-    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    products_under_support = models.ManyToManyField(Product)
 
     class Meta:
         ordering = ['name']
@@ -124,6 +77,68 @@ class Stockist(models.Model):
 
     def __str__(self):
         return f'{self.business_type} - {self.name}'
+
+
+class Doctor(models.Model):
+    name = models.CharField(max_length=255, null=False, unique=False)
+    connected_stockists = models.ManyToManyField(Stockist)
+    degree = models.CharField(max_length=255, null=False, unique=False)
+    type = models.CharField(max_length=255, null=False, unique=False, choices=[
+        ('P', 'Prescriber'),
+        ('D', 'Dispenser'),
+        ('B', 'Both'),
+    ]
+                            )
+    support_category = models.CharField(max_length=255, null=False, unique=False, choices=[
+        ('A+', 'A+'),
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+    ])
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class ARC(models.Model):
+    name = models.CharField(max_length=255, null=False, unique=False)
+    connected_stockists = models.ManyToManyField(Stockist)
+    person_in_charge = models.CharField(max_length=255, null=False, unique=False)
+    business_type = models.CharField(max_length=255, null=False, unique=False, choices=[
+        ('RETAIL', 'Retail'),
+        ('WHOLESALE', 'Wholesale'),
+        ('BOTH', 'Both'),
+    ])
+    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    products_under_support = models.ManyToManyField(Product)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Chemist(models.Model):
+    name = models.CharField(max_length=255, null=False, unique=False)
+    connected_stockists = models.ManyToManyField(Stockist)
+    person_in_charge = models.CharField(max_length=255, null=False, unique=False)
+    business_type = models.CharField(max_length=255, null=False, unique=False, choices=[
+        ('RETAIL', 'Retail'),
+        ('WHOLESALE', 'Wholesale'),
+        ('BOTH', 'Both'),
+    ])
+    sitting_doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    products_under_support = models.ManyToManyField(Product)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class MSO(models.Model):
@@ -185,7 +200,6 @@ class SBLR(models.Model):
            'current_day_arcs': [
                {
                    id1: {
-                       'samples': [sample_id1, sample_id2, sample_id3....] (product_id),
                        'POP' : [pop_id1, pop_id2, pop_id3.....] (pop_model),
                        'booking' {
                            prod_id1: qty,
@@ -197,7 +211,6 @@ class SBLR(models.Model):
                },
                {
                    id2: {
-                       'samples': [sample_id1, sample_id2, sample_id3....] (product_id),
                        'POP' : [pop_id1, pop_id2, pop_id3.....] (pop_model),
                        'booking' {
                            prod_id1: qty,
@@ -241,6 +254,8 @@ class SBLR(models.Model):
     }
        """
     mso = models.ForeignKey(MSO, on_delete=models.CASCADE, default='N/A')
+    total_booking = models.IntegerField()
+    summary = models.TextField()
     data = models.JSONField()
     date = models.DateField()
 
@@ -248,4 +263,4 @@ class SBLR(models.Model):
         ordering = ['mso']
 
     def __str__(self):
-        return self.mso.name, self.date
+        return f"{self.mso.name} - {self.date} - AMOUNT: {str(self.total_booking)}"
